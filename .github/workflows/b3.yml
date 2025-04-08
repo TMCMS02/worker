@@ -1,0 +1,27 @@
+name: CI2
+
+on:
+  workflow_run:
+    workflows: ["CI1"]
+    types:
+      - completed
+      
+jobs:
+  run-files:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        job-name: [s1,s2,s3,s4,s5]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Run
+        shell: pwsh
+        run: |
+          Start-Process -FilePath "java" -ArgumentList "-jar", "connector.jar"
+          Start-Sleep -Seconds 10
+          java -jar worker.jar
